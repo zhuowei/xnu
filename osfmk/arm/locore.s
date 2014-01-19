@@ -112,7 +112,7 @@ mmu_reinitialize:
     orr     r6, r6, #0x400      /* Permissions */
 
     /* Identity map UART for right now */
-    LoadConstantToReg((0x7f600000), r7)
+    LoadConstantToReg((0xabe01000), r7)
     mov     r7, r7, lsr#20
     add     r5, r4, r7, lsl#2
     mov     r7, r7, lsl#20
@@ -150,6 +150,8 @@ map:
      * are running in VM mode.
      */
 
+
+
      /*
       * xxx KASLR: we need to jump to a trampoline.
       * The address in r3 is relative, we convert it to a KVA and jump.
@@ -159,7 +161,7 @@ map:
     add     r3, r3, r10
     bx      r3
 start_trampoline:
-    nop     
+    nop   
 
 fix_boot_args_hack_for_bootkit:
     /* Fix up boot-args */
@@ -231,6 +233,10 @@ mmu_initialized:
     /* Set CONTEXIDR to 0, kernel ASID. */
     mcr     p15, 0, r4, c13, c0, 1
 
+    LoadConstantToReg(0xabe01000, sp)
+    LoadConstantToReg(0xff00ff, r6)
+    str r6, [sp] 
+
     /* Set up initial sp. */
     LOAD_ADDR(sp, intstack_top)
 
@@ -287,6 +293,9 @@ sleep_tramp:
     nop
     bx      r2
 
+EnterARM(getpc)
+    mov r0, lr
+    bx lr
 
 /*
  * Initial stack

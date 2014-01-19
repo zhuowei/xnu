@@ -43,6 +43,7 @@
 #if defined(BOARD_CONFIG_OMAP3530) || defined(BOARD_CONFIG_OMAP335X)
 //#define NO_EXCLUSIVES 1
 #endif
+#define NO_EXCLUSIVES 1
 
 .align 4
 .globl _OSCompareAndSwap64

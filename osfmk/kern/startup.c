@@ -153,13 +153,19 @@ int turn_on_log_leaks = 0;
 void
 kernel_early_bootstrap(void)
 {
+        kprintf("Lock mod init\n");
 
 	lck_mod_init();
 
 	/*
 	 * Initialize the timer callout world
 	 */
+
+        kprintf("Timer call init\n");
+
 	timer_call_initialize();
+
+        kprintf("Early bootstrap complete\n");
 }
 
 
@@ -172,7 +178,7 @@ kernel_bootstrap(void)
 
 	printf("%s\n", version); /* log kernel version */
 
-#define kernel_bootstrap_kprintf(x...) /* kprintf("kernel_bootstrap: " x) */
+#define kernel_bootstrap_kprintf(x...)  kprintf("kernel_bootstrap: " x)
 
 	if (PE_parse_boot_argn("-l", namep, sizeof (namep))) /* leaks logging */
 		turn_on_log_leaks = 1;

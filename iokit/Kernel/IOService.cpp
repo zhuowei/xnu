@@ -3104,7 +3104,6 @@ void IOService::doServiceMatch( IOOptionBits options )
 //  				kIOServiceRegisteredState, 0xffffffff );
 
     while( keepGuessing ) {
-
         matches = gIOCatalogue->findDrivers( this, &catalogGeneration );
 	// the matches list should always be created by findDrivers()
         if( matches) {
@@ -3379,7 +3378,7 @@ void _IOConfigThread::main(void * arg, wait_result_t result)
 	IOLog("thread_policy_set(%d)\n", kr);
 
     do {
-
+LOG("Begin loop: ");
 //	randomDelay();
 
         semaphore_wait( gJobsSemaphore );
@@ -3406,7 +3405,9 @@ void _IOConfigThread::main(void * arg, wait_result_t result)
 	  switch( job->type) {
 
 	    case kMatchNubJob:
+LOG("Service match call: ");
 		nub->doServiceMatch( job->options );
+LOG("End call: ");
 		break;
 
             default:
@@ -3431,13 +3432,14 @@ void _IOConfigThread::main(void * arg, wait_result_t result)
             }
             IOUnlock( gJobsLock );
 	}
-
+LOG("End loop\n");
     } while( alive );
 
     if( gIOKitDebug & kIOLogConfig)
         LOG("config(%p): terminating\n", IOThreadSelf() );
 
     self->release();
+LOG("Exit the config thread\n");
 }
 
 IOReturn IOService::waitMatchIdle( UInt32 msToWait )

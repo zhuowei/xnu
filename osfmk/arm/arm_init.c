@@ -44,6 +44,8 @@ extern uint8_t *irqstack;
 
 extern int disableConsoleOutput, serialmode;
 
+extern int _getpc(void);
+
 /**
  * arm_processor_identify
  *
@@ -73,6 +75,9 @@ void arm_init(boot_args * args)
     /*
      * We are in. 
      */
+
+    memset((void*) 0xabe01000, 0, 800*1280*4);
+
     PE_early_puts("arm_init: starting up\n");
 
     /*

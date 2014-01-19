@@ -5,6 +5,7 @@ debug arm s5l8930x
 debug arm s5l8920x
 debug arm s5l8922x
 debug arm omap3430_rx51
+debug arm tegra30_grouper
 development arm omap335x
 development arm omap3530
 development arm armpba8

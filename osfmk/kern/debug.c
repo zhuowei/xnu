@@ -238,6 +238,10 @@ panic_prologue(const char *str)
 		kdbg_dump_trace_to_file("/var/tmp/panic.trace");
 	}
 
+    for (int i = 0; i < 800*1280; i++) {
+        *((int*) (0xabe01000 + (i * 4))) |= 0xff00ff;
+    }
+
 	s = splhigh();
 	disable_preemption();
 
@@ -354,6 +358,7 @@ panic_context(unsigned int reason, void *ctx, const char *str, ...)
 	/* panic_caller is initialized to 0.  If set, don't change it */
 	if ( ! panic_caller )
 		panic_caller = (unsigned long)(char *)__builtin_return_address(0);
+
 	
 	s = panic_prologue(str);
 	kdb_printf("panic(cpu %d caller 0x%lx): ", (unsigned) paniccpu, panic_caller);

@@ -656,7 +656,10 @@ extern void 		funnel_unlock(
 						struct funnel_lock	*lock);
 
 static inline uint16_t thread_set_tag_internal(thread_t thread, uint16_t tag) {
-	return __sync_fetch_and_or(&thread->thread_tag, tag);
+	//return __sync_fetch_and_or(&thread->thread_tag, tag);
+	uint16_t retval = thread->thread_tag;
+	thread->thread_tag |= tag;
+	return retval;
 }
 static inline uint16_t thread_get_tag_internal(thread_t thread) {
 	return thread->thread_tag;

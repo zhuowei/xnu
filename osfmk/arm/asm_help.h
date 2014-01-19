@@ -100,7 +100,7 @@
 /*
  * ARM atomic function helper macro.
  */
-#define AtomicMachine(name, instr)  \
+#define AtomicMachineAAA(name, instr)  \
     EnterARM(hw_atomic_ ##name)     \
         mov     r12, r0         ;   \
     try_ ##name:                ;   \
@@ -120,7 +120,7 @@
 #define AtomicEpilogue              \
         msr     cpsr_cf, r3
 
-#define AtomicMachineNoExclusive(name, instr)  \
+#define AtomicMachine(name, instr)  \
     EnterARM(hw_atomic_ ##name)     \
         AtomicPrologue          ;   \
         mov     r12, r0         ;   \

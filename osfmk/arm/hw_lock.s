@@ -16,9 +16,13 @@
  * OMAP3530 on BeagleBoard xM has issues with STREX/LDREX. Do ourselves a favor
  * and not use them. It doesn't matter as this SoC is uniprocessor.
  */
-#ifdef BOARD_CONFIG_OMAP3530
-#undef BOARD_CONFIG_OMAP3530
-#endif
+//#ifdef BOARD_CONFIG_OMAP3530
+//#undef BOARD_CONFIG_OMAP3530
+//#endif
+
+#define BOARD_CONFIG_OMAP3530
+
+#define NO_EXCLUSIVES
 
 #ifdef NO_EXCLUSIVES
 #define ldrex           ldr

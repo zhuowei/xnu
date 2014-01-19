@@ -761,6 +761,7 @@ void
 conslog_putc(
 	char c)
 {
+	//Tegra_console_putchar(c);
 	if ((debug_mode && !disable_debug_output) || !disableConsoleOutput)
 		cnputc(c);
 
@@ -796,6 +797,7 @@ printf(const char *fmt, ...)
 void
 consdebug_putc(char c)
 {
+	//Tegra_console_putchar(c);
 	if ((debug_mode && !disable_debug_output) || !disableConsoleOutput)
 		cnputc(c);
 
@@ -809,6 +811,7 @@ consdebug_putc(char c)
 void
 consdebug_putc_unbuffered(char c)
 {
+	//Tegra_console_putchar(c);
 	if ((debug_mode && !disable_debug_output) || !disableConsoleOutput)
 		cnputc_unbuffered(c);
 
@@ -822,6 +825,7 @@ consdebug_putc_unbuffered(char c)
 void
 consdebug_log(char c)
 {
+	//Tegra_console_putchar(c);
 	debug_putc(c);
 }
 

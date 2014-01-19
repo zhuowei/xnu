@@ -604,7 +604,7 @@ $(TARGET)/mach_kernel: $(addprefix $(TARGET)/,$(foreach component,$(COMPONENT_LI
 	$(_v)${MAKE} build_mach_kernel_exports
 	@echo LD mach_kernel.sys
 	$(_v)$(CAT) $(addprefix $(TARGET)/,$(foreach component,$(COMPONENT_LIST), $(addprefix $(component)/$(firstword $($(addsuffix _KERNEL_CONFIG, $(shell printf $(component) | tr a-z A-Z))) $(KERNEL_CONFIG))/, $(addsuffix .filelist, $(component))))) < /dev/null > link.filelist
-	$(_v)$(LD) $(LDFLAGS_KERNEL) -filelist link.filelist version.o lastkernelconstructor.o `if [ -e $(STATIC_KMODS) ]; then echo $(STATIC_KMODS); fi` \
+	$(_v)$(LD) -v $(LDFLAGS_KERNEL) -filelist link.filelist version.o lastkernelconstructor.o `if [ -e $(STATIC_KMODS) ]; then echo $(STATIC_KMODS); fi` \
 		-o $(TARGET)/mach_kernel.sys $(LD_KERNEL_LIBS)
 	$(_v)if [ $(UNAME) != Linux ]; then \
 	if [ $(BUILD_DWARF)  -eq  1 ]; then \

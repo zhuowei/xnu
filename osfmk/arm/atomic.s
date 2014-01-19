@@ -47,14 +47,18 @@ EnterARM(hw_compare_and_store)
 EnterARM(OSCompareAndSwap)
     mov     r12, r0
 loop:
-    ldrex   r3, [r2]
+    //ldrex   r3, [r2]
+    ldr r3, [r2]
     mov     r0, #0
     cmp     r3, r12
     bxne    lr
-    strex   r0, r1, [r2]
-    eors    r0, r0, #1
-    bxne    lr
-    b       loop
+    //strex   r0, r1, [r2]
+    //eors    r0, r0, #1
+    //bxne    lr
+    //b       loop
+    mov r0, #1
+    str r1, [r2]
+    bx lr
 
 /*
  * Atomic functions

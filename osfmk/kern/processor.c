@@ -119,6 +119,7 @@ processor_bootstrap(void)
 	pset_init(&pset0, &pset_node0);
 	pset_node0.psets = &pset0;
 
+
 	simple_lock_init(&pset_node_lock, 0);
 
 	queue_init(&tasks);

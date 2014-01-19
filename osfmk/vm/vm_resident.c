@@ -821,7 +821,8 @@ pmap_startup(
 	 */
 	fill = 0;								/* Assume no fill */
 	if (PE_parse_boot_argn("fill", &fillval, sizeof (fillval))) fill = 1;			/* Set fill */
-#if	DEBUG
+#if	0
+//DEBUG
 	/* This slows down booting the DEBUG kernel, particularly on
 	 * large memory systems, but is worthwhile in deterministically
 	 * trapping uninitialized memory usage.

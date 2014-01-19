@@ -391,7 +391,7 @@ Debugger(
      * as a quiet way into the debugger.
      */
 
-    if (panicstr) {
+    if (1||panicstr) {
         disable_preemption();
 
         /* Obtain current frame pointer */
