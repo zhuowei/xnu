@@ -101,7 +101,7 @@ void kprintf(const char *format, ...)
     va_list listp;
 
     va_start(listp, format);
-    _doprnt(format, &listp, &Tegra_console_putchar, 16);
+    //_doprnt(format, &listp, &Tegra_console_putchar, 16);
     //_doprnt(format, &listp, PE_kputc, 16);
     va_end(listp);
 }

@@ -84,8 +84,8 @@ static void reboot_system(void) {
 
 static void timer_configure(void)
 {
-    uint64_t hz = 100000; //1MHz
-    clock_decrementer = 1000;//(hz / 7);   // For 500Hz.
+    uint64_t hz = 67500 * 4; //dummy
+    clock_decrementer = 1000;//(hz / 7);   // also dummy
 
     gPEClockFrequencyInfo.timebase_frequency_hz = hz;
 
@@ -126,6 +126,8 @@ static void qgic_dist_init(void)
 
     cpumask |= cpumask << 8;
     cpumask |= cpumask << 16;
+    cpumask = 0x01010101;
+
 
     /* Disabling GIC */
     HwReg(gTouchPadqGICDistributerBase + GIC_DIST_CTRL) = 0;
@@ -140,10 +142,10 @@ static void qgic_dist_init(void)
     /* Set each interrupt line to use N-N software model
      * and edge sensitive, active high
      */
-    for (i=32; i < num_irq; i += 16)
+    /*for (i=32; i < num_irq; i += 16)
         HwReg(gTouchPadqGICDistributerBase + GIC_DIST_CONFIG + i * 4/16) = 0xffffffff;
 
-    HwReg(gTouchPadqGICDistributerBase + GIC_DIST_CONFIG + 4) = 0xffffffff;
+    HwReg(gTouchPadqGICDistributerBase + GIC_DIST_CONFIG + 4) = 0xffffffff;*/
 
     /* Set up interrupts for this CPU */
     for (i = 32; i < num_irq; i += 4)
@@ -156,7 +158,7 @@ static void qgic_dist_init(void)
      * setting up equal priorities for all
      */
     for (i=0; i < num_irq; i += 4)
-        HwReg(gTouchPadqGICDistributerBase + GIC_DIST_PRI + i * 4 / 4) = 0xa0a0a0a0;
+        HwReg(gTouchPadqGICDistributerBase + GIC_DIST_PRI + i * 4 / 4) = 0x10101010;
 
     /* Disabling interrupts*/
     for (i=0; i < num_irq; i += 32)
@@ -172,7 +174,7 @@ static void qgic_dist_init(void)
 static void qgic_cpu_init(void)
 {
     HwReg(gTouchpadqGICCPUBase + GIC_CPU_PRIMASK) = 0xf0;
-    HwReg(gTouchpadqGICCPUBase + GIC_CPU_CTRL) = 0x3;
+    HwReg(gTouchpadqGICCPUBase + GIC_CPU_CTRL) = 0x1;
 }
 
 void Grouper_interrupt_init(void)
@@ -208,9 +210,9 @@ int i = 0;
     uint32_t reg = GIC_DIST_ENABLE_SET + (TEGRA_INT_TIMER1_EXP/32)*4;
     uint32_t bit = 1 << (TEGRA_INT_TIMER1_EXP & 31);
     HwReg(gTouchPadqGICDistributerBase + reg) = (bit);
-    for (i=0; i < num_irq; i += 32) 
-        HwReg(gTouchPadqGICDistributerBase + GIC_DIST_ENABLE_SET + i * 4/32) = 0xffffffff; //Enable ALL the IRQ!
-    HwReg(gTegraICTLRBase + 0x24) = 0x1; //Enable the legacy IRQ Path
+    //for (i=0; i < num_irq; i += 32) 
+    //    HwReg(gTouchPadqGICDistributerBase + GIC_DIST_ENABLE_SET + i * 4/32) = 0xffffffff; //Enable ALL the IRQ!
+    //HwReg(gTegraICTLRBase + 0x24) = 0x1; //Enable the legacy IRQ Path
 
     /*
      * set timer values and initialize decrementer 
@@ -235,28 +237,28 @@ int i = 0;
     }
 
     kprintf(KPRINTF_PREFIX "Grouper Timer initialized, Timer value %llu\n", Grouper_timer_value());
-while(1){};
+
     return;
 }
 
 void Grouper_handle_interrupt(void *context)
 {
     uint32_t irq_no = HwReg(gTouchpadqGICCPUBase + GIC_CPU_INTACK);
-kprintf("Interrupt %x\n", irq_no);
+//kprintf("Interrupt %x\n", irq_no);
     /*if(irq_no > NR_IRQS) {
         kprintf(KPRINTF_PREFIX "Got a bogus IRQ?");
         return;
     }*/
 
     /* Timer interrupt? */
-    if(irq_no = 0x1f||irq_no == TEGRA_INT_TIMER1_EXP) {
-        kprintf("%x\n", HwReg(gTegraICTLRBase + 0));
-        Grouper_timer_enabled(FALSE);
+    if(irq_no == TEGRA_INT_TIMER1_EXP) {
+        //kprintf("%x\n", HwReg(gTegraICTLRBase + 0));
+        //Grouper_timer_enabled(FALSE);
         HARDWARE_REGISTER(gTegraTimerBase + TIMER_PCR) = (1 << 30); //ack the timer interrupt
         clock_absolute_time += (clock_decrementer - (int64_t) Grouper_timer_value());
         rtclock_intr((arm_saved_state_t *) context);
-    //HARDWARE_REGISTER(gTegraTimerBase + TIMER_PTV) = clock_decrementer | TIMER_MODE_PERIODIC;
-        Grouper_timer_enabled(TRUE);
+        //HARDWARE_REGISTER(gTegraTimerBase + TIMER_PTV) = clock_decrementer | TIMER_MODE_PERIODIC;
+        //Grouper_timer_enabled(TRUE);
         clock_had_irq = TRUE;
 
     } else {
@@ -265,7 +267,7 @@ kprintf("Interrupt %x\n", irq_no);
 
     /* EOI. */
     HwReg(gTouchpadqGICCPUBase + GIC_CPU_EOI) = irq_no;
-kprintf("EOI\n");
+//kprintf("EOI\n");
     return;
 }
 /*    arm_saved_state_t *regs = (arm_saved_state_t *) context;
@@ -306,7 +308,6 @@ kprintf("EOI\n");
 
 uint64_t Grouper_get_timebase(void)
 {
-return 0;
     uint32_t timestamp;
 
     if (!clock_initialized)
@@ -318,8 +319,8 @@ return 0;
         v += (uint64_t) (((uint64_t) clock_decrementer) - (uint64_t) (timestamp));
         return v;
     } else {
-        HARDWARE_REGISTER(gTegraTimerBase) = clock_decrementer;
-        Grouper_timer_enabled(TRUE);
+        //HARDWARE_REGISTER(gTegraTimerBase) = clock_decrementer;
+        //Grouper_timer_enabled(TRUE);
         clock_absolute_time += clock_decrementer;
 
         return clock_absolute_time;
@@ -334,10 +335,12 @@ return 0;
 
 void Grouper_timer_enabled(int enable)
 {
+    kprintf("Timer toggle: %d\n", enable);
     if (enable)
         HARDWARE_REGISTER(gTegraTimerBase + TIMER_PTV) |= TIMER_SET_ENABLE;
     else
         HARDWARE_REGISTER(gTegraTimerBase + TIMER_PTV) &= ~TIMER_SET_ENABLE;
+    kprintf("Final timer: %x\n", HARDWARE_REGISTER(gTegraTimerBase + TIMER_PTV));
 }
 
 /*
